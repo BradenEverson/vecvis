@@ -1,5 +1,5 @@
 [workspace]
-members = [ "vecvis"]
+members = ["vecvis"]
 resolver = "2"
 
 [workspace.package]

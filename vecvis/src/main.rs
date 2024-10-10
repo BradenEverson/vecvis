@@ -1,14 +1,7 @@
 //! Main Bevy Entrypoint with 3-space Graphing
 
 use bevy::{
-    app::{App, Startup},
-    asset::Assets,
-    color::Color,
-    math::Vec3,
-    pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial},
-    prelude::{Camera3dBundle, Commands, Mesh, ResMut, Sphere, Transform},
-    utils::default,
-    DefaultPlugins,
+    app::{App, Startup, Update}, asset::Assets, color::Color, input::mouse::{MouseScrollUnit, MouseWheel}, math::Vec3, pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial}, prelude::{Camera3d, Camera3dBundle, Commands, EventReader, Mesh, Query, ResMut, Sphere, Transform, With}, utils::default, DefaultPlugins
 };
 use bevy_infinite_grid::{InfiniteGridBundle, InfiniteGridPlugin};
 use vecvis::vector::PointCollection;
@@ -24,6 +17,7 @@ fn main() {
         .add_plugins(InfiniteGridPlugin)
         .add_plugins(WireframePlugin)
         .add_systems(Startup, setup)
+        .add_systems(Update, camera_scroll)
         .run();
 }
 
@@ -64,4 +58,18 @@ fn setup(
         transform: Transform::from_xyz(3.0, 3.0, 3.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
+}
+
+fn camera_scroll(mut scroll_events: EventReader<MouseWheel>, mut query: Query<&mut Transform, With<Camera3d>>) {
+    for event in scroll_events.read() {
+        let scroll_amount = match event.unit {
+            MouseScrollUnit::Line => event.y * -0.2,
+            MouseScrollUnit::Pixel => event.y * -0.01,
+        };
+
+        for mut transform in query.iter_mut() {
+            let forward = transform.rotation * Vec3::Z;
+            transform.translation += forward * scroll_amount;
+        }
+    }
 }
