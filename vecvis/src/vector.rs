@@ -17,13 +17,13 @@ impl PointCollection {
     pub fn fill_span<FN: Fn(f32) -> (f32, f32, f32)>(
         &mut self,
         function: FN,
-        range: Range<usize>,
+        range: Range<isize>,
         step: f32,
     ) {
         let a = range.start;
         let b = range.end;
 
-        let steps = (((b - a) as f32) / step) as usize;
+        let steps = (((b - a) as f32) / step) as isize;
 
         for t in 0..steps {
             let t_here = a as f32 + (t as f32 * step);

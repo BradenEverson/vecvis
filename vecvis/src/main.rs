@@ -1,7 +1,7 @@
 //! Main Bevy Entrypoint with 3-space Graphing
 
 use bevy::{
-    app::{App, Startup, Update}, asset::Assets, color::Color, input::{mouse::{MouseButtonInput, MouseMotion, MouseScrollUnit, MouseWheel}, ButtonInput}, math::{Quat, Vec3}, pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial}, prelude::{Camera3d, Camera3dBundle, Commands, EventReader, Mesh, MouseButton, Query, Res, ResMut, Sphere, Transform, With}, utils::default, DefaultPlugins
+    app::{App, Startup, Update}, asset::Assets, color::Color, input::{mouse::{MouseMotion, MouseScrollUnit, MouseWheel}, ButtonInput}, math::{Quat, Vec3}, pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial}, prelude::{Camera3d, Camera3dBundle, Commands, EventReader, Mesh, MouseButton, Query, Res, ResMut, Sphere, Transform, With}, utils::default, DefaultPlugins
 };
 use bevy_infinite_grid::{InfiniteGridBundle, InfiniteGridPlugin};
 use vecvis::vector::PointCollection;
@@ -9,9 +9,9 @@ use vecvis::vector::PointCollection;
 const DRAG_SENSITIVITY: f32 = 0.01;
 
 fn main() {
-    let line = |t| (t, t * t, t);
+    let line = |t| (f32::cos(t), f32::sin(t), t);
     let mut points = PointCollection::default();
-    points.fill_span(line, 0..10, 0.1);
+    points.fill_span(line, -20..20, 0.01);
 
     App::new()
         .insert_resource(points)
@@ -87,7 +87,7 @@ fn camera_drag(
                 let delta_x = event.delta.x * DRAG_SENSITIVITY;
                 let delta_y = event.delta.y * DRAG_SENSITIVITY;
 
-                let yaw_rotation = Quat::from_rotation_y(-delta_x);
+                let yaw_rotation = Quat::from_rotation_y(delta_x);
                 let pitch_rotation = Quat::from_rotation_x(-delta_y);
 
                 let current_pos = transform.translation;
