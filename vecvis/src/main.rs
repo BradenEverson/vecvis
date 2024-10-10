@@ -1,10 +1,12 @@
 //! Main Bevy Entrypoint with 3-space Graphing
 
 use bevy::{
-    app::{App, Startup, Update}, asset::Assets, color::Color, input::mouse::{MouseScrollUnit, MouseWheel}, math::Vec3, pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial}, prelude::{Camera3d, Camera3dBundle, Commands, EventReader, Mesh, Query, ResMut, Sphere, Transform, With}, utils::default, DefaultPlugins
+    app::{App, Startup, Update}, asset::Assets, color::Color, input::{mouse::{MouseButtonInput, MouseMotion, MouseScrollUnit, MouseWheel}, ButtonInput}, math::{Quat, Vec3}, pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial}, prelude::{Camera3d, Camera3dBundle, Commands, EventReader, Mesh, MouseButton, Query, Res, ResMut, Sphere, Transform, With}, utils::default, DefaultPlugins
 };
 use bevy_infinite_grid::{InfiniteGridBundle, InfiniteGridPlugin};
 use vecvis::vector::PointCollection;
+
+const DRAG_SENSITIVITY: f32 = 0.01;
 
 fn main() {
     let line = |t| (t, t * t, t);
@@ -17,7 +19,7 @@ fn main() {
         .add_plugins(InfiniteGridPlugin)
         .add_plugins(WireframePlugin)
         .add_systems(Startup, setup)
-        .add_systems(Update, camera_scroll)
+        .add_systems(Update, (camera_scroll, camera_drag))
         .run();
 }
 
@@ -70,6 +72,30 @@ fn camera_scroll(mut scroll_events: EventReader<MouseWheel>, mut query: Query<&m
         for mut transform in query.iter_mut() {
             let forward = transform.rotation * Vec3::Z;
             transform.translation += forward * scroll_amount;
+        }
+    }
+}
+
+fn camera_drag(
+    mut motion_events: EventReader<MouseMotion>,
+    mouse_input: Res<ButtonInput<MouseButton>>,
+    mut query: Query<&mut Transform, With<Camera3d>>,
+    ) {
+    if mouse_input.pressed(MouseButton::Left) {
+        for event in motion_events.read() {
+            for mut transform in query.iter_mut() {
+                let delta_x = event.delta.x * DRAG_SENSITIVITY;
+                let delta_y = event.delta.y * DRAG_SENSITIVITY;
+
+                let yaw_rotation = Quat::from_rotation_y(-delta_x);
+                let pitch_rotation = Quat::from_rotation_x(-delta_y);
+
+                let current_pos = transform.translation;
+                let new_pos = yaw_rotation * pitch_rotation * current_pos;
+
+                transform.translation = new_pos;
+                transform.look_at(Vec3::ZERO, Vec3::Y);
+            }
         }
     }
 }
