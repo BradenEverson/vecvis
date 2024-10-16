@@ -1,7 +1,22 @@
 //! Main Bevy Entrypoint with 3-space Graphing
 
 use bevy::{
-    app::{App, Startup, Update}, asset::Assets, color::Color, input::{mouse::{MouseMotion, MouseScrollUnit, MouseWheel}, ButtonInput}, math::{Quat, Vec3}, pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial}, prelude::{Camera2d, Camera3d, Camera3dBundle, Commands, EventReader, Mesh, MouseButton, Query, Res, ResMut, Sphere, Transform, With}, utils::default, winit::WinitSettings, DefaultPlugins
+    app::{App, Startup, Update},
+    asset::Assets,
+    color::Color,
+    input::{
+        mouse::{MouseMotion, MouseScrollUnit, MouseWheel},
+        ButtonInput,
+    },
+    math::{Quat, Vec3},
+    pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial},
+    prelude::{
+        Camera3d, Camera3dBundle, Commands, EventReader, Mesh, MouseButton, Query, Res, ResMut,
+        Sphere, Transform, With,
+    },
+    utils::default,
+    winit::WinitSettings,
+    DefaultPlugins,
 };
 use bevy_infinite_grid::{InfiniteGridBundle, InfiniteGridPlugin};
 use vecvis::vector::PointCollection;
@@ -63,7 +78,10 @@ fn setup(
     });
 }
 
-fn camera_scroll(mut scroll_events: EventReader<MouseWheel>, mut query: Query<&mut Transform, With<Camera3d>>) {
+fn camera_scroll(
+    mut scroll_events: EventReader<MouseWheel>,
+    mut query: Query<&mut Transform, With<Camera3d>>,
+) {
     for event in scroll_events.read() {
         let scroll_amount = match event.unit {
             MouseScrollUnit::Line => event.y * -0.2,
@@ -81,7 +99,7 @@ fn camera_drag(
     mut motion_events: EventReader<MouseMotion>,
     mouse_input: Res<ButtonInput<MouseButton>>,
     mut query: Query<&mut Transform, With<Camera3d>>,
-    ) {
+) {
     if mouse_input.pressed(MouseButton::Left) {
         for event in motion_events.read() {
             for mut transform in query.iter_mut() {
