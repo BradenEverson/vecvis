@@ -1,7 +1,7 @@
 //! Main Bevy Entrypoint with 3-space Graphing
 
 use bevy::{
-    app::{App, Startup, Update}, asset::Assets, color::Color, input::{mouse::{MouseMotion, MouseScrollUnit, MouseWheel}, ButtonInput}, math::{Quat, Vec3}, pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial}, prelude::{Camera3d, Camera3dBundle, Commands, EventReader, Mesh, MouseButton, Query, Res, ResMut, Sphere, Transform, With}, utils::default, DefaultPlugins
+    app::{App, Startup, Update}, asset::Assets, color::Color, input::{mouse::{MouseMotion, MouseScrollUnit, MouseWheel}, ButtonInput}, math::{Quat, Vec3}, pbr::{wireframe::WireframePlugin, DirectionalLightBundle, PbrBundle, StandardMaterial}, prelude::{Camera2d, Camera3d, Camera3dBundle, Commands, EventReader, Mesh, MouseButton, Query, Res, ResMut, Sphere, Transform, With}, utils::default, winit::WinitSettings, DefaultPlugins
 };
 use bevy_infinite_grid::{InfiniteGridBundle, InfiniteGridPlugin};
 use vecvis::vector::PointCollection;
@@ -15,6 +15,7 @@ fn main() {
 
     App::new()
         .insert_resource(points)
+        .insert_resource(WinitSettings::desktop_app())
         .add_plugins(DefaultPlugins)
         .add_plugins(InfiniteGridPlugin)
         .add_plugins(WireframePlugin)
